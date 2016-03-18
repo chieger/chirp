@@ -10,15 +10,31 @@ import UIKit
 
 class Tweet: NSObject {
     
-    var text: NSString?
+    var tweetId: Int?
+    var text: String?
+    var userName: String?
+    var screenName: String?
     var timestamp: NSDate?
+    var timeStampString: String?
     var retweetCount: Int = 0
     var favoritesCount: Int = 0
+    var retweeted: Bool?
+    var favorited: Bool?
+    var profileImageUrl: NSURL!
     
     init(dictionary: NSDictionary) {
+        
+        tweetId = dictionary["id"] as? Int
         text = dictionary["text"] as? String
+        userName = dictionary.valueForKeyPath("user.name") as? String
+        screenName = "@\(dictionary.valueForKeyPath("user.screen_name") as! String)"
         retweetCount = (dictionary["retweet_count"] as? Int) ?? 0
-        favoritesCount = (dictionary["favourites_count"] as? Int) ?? 0
+        favoritesCount = (dictionary["favorite_count"] as? Int) ?? 0
+        retweeted = dictionary["retweeted"] as? Bool
+        favorited = dictionary["favorited"] as? Bool
+        
+        let profileImageUrlString = dictionary.valueForKeyPath("user.profile_image_url") as? String
+        profileImageUrl = NSURL(string: profileImageUrlString!)
         
         let timestampString = dictionary["created_at"] as? String
         
@@ -27,12 +43,14 @@ class Tweet: NSObject {
             let formatter = NSDateFormatter()
             formatter.dateFormat = "EEE MMM d HH:mm:ss Z y"
         timestamp = formatter.dateFromString(timestampString)
+            
         }
         
     }
     
-    class func tweetsWithArray(dictionaries: [NSDictionary]) -> [Tweet] {
-    var tweets = [Tweet]()
+    
+    static func tweetsWithArray(dictionaries: [NSDictionary]) -> [Tweet] {
+        var tweets = [Tweet]()
         
         for dictionary in dictionaries {
             let tweet = Tweet(dictionary: dictionary)

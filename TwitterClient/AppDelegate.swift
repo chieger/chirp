@@ -17,6 +17,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        if User.currentUser != nil {
+            print("There is a current user")
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateViewControllerWithIdentifier("TweetsNavigationController") as! UINavigationController
+            window?.rootViewController = vc
+        }
+        
+        NSNotificationCenter.defaultCenter().addObserverForName(User.userDidLogoutNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (NSNotification) -> Void in
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateInitialViewController()
+            self.window?.rootViewController = vc
+        }
         return true
     }
     
@@ -41,13 +53,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
+    
     func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
+        // This function is called anytime are app is opened by means of a url. In this case we created a url scheme that will open our app when that url is opened. We then supplied that url to twitter as a callback url and they will use that to call us back and open our app.
+        print("my app just got opened using the callback that we supplied in the login method.")
+        print("Notice that the authorized request token was passed back as a query parameter in the url, where the base url was the callback used to open our app")
         print(url.description)
-        
-        let client = TwitterClient.sharedInstance
-        client.handleOpenUrl(url)
-        
-        
+        print("We can access just the query parameter part of the url by calling .query on the url")
+        print(url.query)
+        print("next we will pass the url over to a custom method which can parse the url to get an access token. It is convention to call this method, handleOpenUrl")
+        TwitterClient.sharedInstance.handleOpenUrl(url)
         
         return true
     }
