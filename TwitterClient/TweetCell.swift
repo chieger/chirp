@@ -7,132 +7,105 @@
 //
 
 import UIKit
+import TTTAttributedLabel
 
-class TweetCell: UITableViewCell {
-    
+protocol TweetCellDelegate {
+    var url: NSURL? {get set}
+    func didTapUrlLink (url: NSURL)
+}
+
+class TweetCell: UITableViewCell, UITextViewDelegate, TTTAttributedLabelDelegate {
     
     @IBOutlet weak var favoriteButton: UIButton!
     @IBOutlet weak var retweetButton: UIButton!
-    
-    
     @IBOutlet weak var screenNameLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
-    @IBOutlet weak var tweetTextLabel: UILabel!
+    @IBOutlet weak var tweetAtTextLabel: TTTAttributedLabel!
     @IBOutlet weak var profileImageView: UIImageView!
-    
     @IBOutlet weak var retweetCountLabel: UILabel!
-    
     @IBOutlet weak var favoriteCountLabel: UILabel!
     
+    var delegate: TweetCellDelegate?
     var tweetId: Int!
     var tweetIdDictionary: NSDictionary!
-    var retweetCount: Int!
-    var favoriteCount: Int!
-    
-    //@IBOutlet weak var timeStampLabel: UILabel!
+    var blueColorTwitter: UIColor = UIColor(red: 64/255, green: 153/255, blue: 255/255, alpha: 1.0)
     var tweet: Tweet! {
         didSet {
-            // update all the cell properties here...
+            tweetAtTextLabel.delegate = self
+            tweetAtTextLabel.enabledTextCheckingTypes = NSTextCheckingType.Link.rawValue
+            tweetAtTextLabel.activeLinkAttributes = [kCTForegroundColorAttributeName: UIColor.greenColor()]
+            tweetAtTextLabel.linkAttributes = [kCTForegroundColorAttributeName: blueColorTwitter, NSUnderlineColorAttributeName: blueColorTwitter , NSUnderlineStyleAttributeName: NSNumber(bool: false)]
             
             screenNameLabel.text = tweet.screenName
             usernameLabel.text = tweet.userName
-            tweetTextLabel.text = tweet.text
+            tweetAtTextLabel.setText(tweet.text)
             profileImageView.setImageWithURL(tweet.profileImageUrl)
             profileImageView.layer.cornerRadius = 4
             profileImageView.clipsToBounds = true
             tweetId = tweet.tweetId
-            favoriteCount = tweet.favoritesCount
-            retweetCount = tweet.retweetCount
-            //let tweetDictionary = tweet.dic
-            
-            // Setup favorite button
-            let favorited = tweet.favorited
-            favoriteButton.selected = favorited! ? true : false
-            if favorited! && favoriteCount == 0 {
-                favoriteCount = 1
-            }
-            
-            let retweeted = tweet.retweeted
-            retweetButton.selected = retweeted! ? true : false
-            if retweeted! && retweetCount == 0 {
-                retweetCount = 1
-            }
-            
-            
-            // timeStampLabel.text = tweet.timestamp
             tweetIdDictionary = ["id": tweetId]
             
-            // Setup favorite label
-            updateCountLabel(favoriteCountLabel, count: favoriteCount)
-            updateCountLabel(retweetCountLabel, count: retweetCount)
-            
+            Tweet.updateButtonAndLabel(favoriteButton, label: favoriteCountLabel, selected: tweet.favorited, count: tweet.favoritesCount)
+            Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
         }
-        
     }
-    
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-        
-        
-    }
-    
-    func updateCountLabel(label: UILabel, count: Int) {
-        label.hidden = (count == 0) ? true : false
-        label.text = String(count)
     }
     
     @IBAction func didPressLikeButton(sender: UIButton) {
-        sender.selected = !sender.selected
-        
-        if sender.selected {
+        if !sender.selected {
             TwitterClient.sharedInstance.favorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
                 
                 }, failure: { (error: NSError) -> () in
                     print(error.localizedDescription)
             })
-            favoriteCount!++
-            updateCountLabel(favoriteCountLabel, count: favoriteCount)
-            
-            
-            
+            tweet.favoritesCount += 1
+            tweet.favorited = true
+            Tweet.updateButtonAndLabel(favoriteButton, label: favoriteCountLabel, selected: tweet.favorited, count: tweet.favoritesCount)
         } else {
             TwitterClient.sharedInstance.unfavorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
                 
                 }, failure: { (error: NSError) -> () in
                     print(error.localizedDescription)
             })
-            
-            favoriteCount!--
-            updateCountLabel(self.favoriteCountLabel, count: self.favoriteCount)
-            
+            tweet.favoritesCount -= 1
+            tweet.favorited = false
+            Tweet.updateButtonAndLabel(favoriteButton, label: favoriteCountLabel, selected: tweet.favorited, count: tweet.favoritesCount)
         }
-        
     }
+    
     @IBAction func didPressRetweetButton(sender: UIButton) {
-        sender.selected = !sender.selected
-        
-        if sender.selected {
+        if !sender.selected {
             TwitterClient.sharedInstance.retweet(tweetId, success: { (retweet: Tweet) -> () in
-                print("You retweeted \(retweet.userName)'s tweet. The retweet count is now \(retweet.retweetCount)")
+                print("Nice Retweet Breh!")
                 }, failure: { (error: NSError) -> () in
                     print(error.localizedDescription)
             })
-            retweetCount!++
-            updateCountLabel(retweetCountLabel, count: retweetCount)
+            tweet.retweetCount += 1
+            tweet.retweeted = true
+            Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
         } else {
             TwitterClient.sharedInstance.unretweet(tweetId, success: { (unretweet: Tweet) -> () in
                 
-                print("You un-retweeted \(unretweet.userName)'s tweet. The retweet count is now \(unretweet.retweetCount)")
+                print("Unretweet that jam!")
                 }, failure: { (error: NSError) -> () in
                     print(error.localizedDescription)
             })
-            retweetCount!--
-            updateCountLabel(retweetCountLabel, count: retweetCount)
+            tweet.retweetCount -= 1
+            tweet.retweeted = false
+            Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
         }
-        
-        
+    }
+    
+    func attributedLabel(label: TTTAttributedLabel!, didSelectLinkWithURL url: NSURL!) {
+        delegate?.didTapUrlLink(url)
+    }
+    
+    func textView(textView: UITextView, shouldInteractWithURL URL: NSURL, inRange characterRange: NSRange) -> Bool {
+        delegate?.didTapUrlLink(URL)
+        return false
     }
     
     override func setSelected(selected: Bool, animated: Bool) {
@@ -140,5 +113,4 @@ class TweetCell: UITableViewCell {
         
         // Configure the view for the selected state
     }
-    
 }

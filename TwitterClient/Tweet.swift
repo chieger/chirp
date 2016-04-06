@@ -59,5 +59,30 @@ class Tweet: NSObject {
         
         return tweets
     }
+    
+    static func updateCountLabel(label: UILabel, count: Int?) {
+        if let count = count {
+            label.hidden = (count == 0) ? true : false
+            label.text = String(count)
+        }
+    }
+    
+    static func updateButtonState(button: UIButton, selected: Bool?, count: Int?) {
+        if let selected = selected {
+            button.selected = selected ? true : false
+            if var count = count {
+                if selected && count == 0 {
+                    count = 1
+                }
+            }
+        }
+    }
+    
+    static func updateButtonAndLabel(button: UIButton, label: UILabel, selected: Bool?, count: Int?) {
+        updateButtonState(button, selected: selected, count: count)
+        updateCountLabel(label, count: count)
+    }
+
+    
 
 }

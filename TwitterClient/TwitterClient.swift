@@ -181,4 +181,16 @@ class TwitterClient: BDBOAuth1SessionManager {
                 print(error.localizedDescription)
         }
     }
+    
+    func composeTweet(parameters: NSDictionary, success: (Tweet) -> (), failure: (NSError) -> ()) {
+        POST("https://api.twitter.com/1.1/statuses/update.json", parameters: parameters, success: { (task: NSURLSessionDataTask, response: AnyObject?) in
+            let dictionary = response as! NSDictionary
+            let newTweet = Tweet(dictionary: dictionary)
+            success(newTweet)
+            
+        }) { (task: NSURLSessionDataTask?, error: NSError) in
+            failure(error)
+                
+        }
+    }
 }
