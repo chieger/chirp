@@ -34,7 +34,7 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         navigationItem.rightBarButtonItem?.tintColor = blueColorTwitter
         
         refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
+        refreshControl.addTarget(self, action: #selector(TweetsViewController.refreshControlAction(_:)), forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)
         
         tableView.delegate = self
@@ -58,7 +58,7 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func getHomeTimeline() {
-        TwitterClient.sharedInstance.homeTimeline({ (tweets: [Tweet]) -> () in
+        TwitterClient.sharedTwitterClient().homeTimeline({ (tweets: [Tweet]) -> () in
             self.tweets = tweets
             let oldestTweet = tweets[tweets.count - 1]
             var maxId = oldestTweet.tweetId
@@ -78,7 +78,7 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func getOldTimeline() {
-        TwitterClient.sharedInstance.oldHomeTimeline(olderTweetsParameters, success: { (oldTweets: [Tweet]) -> () in
+        TwitterClient.sharedTwitterClient().oldHomeTimeline(olderTweetsParameters, success: { (oldTweets: [Tweet]) -> () in
             let oldestTweet = oldTweets[oldTweets.count - 1]
             if var maxId = oldestTweet.tweetId {
                 maxId -= 1
@@ -95,7 +95,7 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func getNewTimeline() {
-        TwitterClient.sharedInstance.newTimeline(newerTweetsParameters, success: { (newTweets: [Tweet]) -> () in
+        TwitterClient.sharedTwitterClient().newTimeline(newerTweetsParameters, success: { (newTweets: [Tweet]) -> () in
             
             if newTweets.isEmpty {
                 print("No new tweets I guess 😭")
@@ -129,7 +129,7 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     @IBAction func didPressLogoutButton(sender: AnyObject) {
-        TwitterClient.sharedInstance.logout()
+        TwitterClient.sharedTwitterClient().logout()
     }
     
     

@@ -42,7 +42,6 @@ class DetailViewController: UIViewController {
         profileImageView.layer.cornerRadius = 4
         profileImageView.clipsToBounds = true
         tweetId = tweet.tweetId
-        // timeStampLabel.text = tweet.timestamp
         tweetIdDictionary = ["id": tweetId]
         Tweet.updateButtonAndLabel(likeButton, label: likesCountLabel, selected: tweet.favorited, count: tweet.favoritesCount)
         Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
@@ -58,11 +57,6 @@ class DetailViewController: UIViewController {
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     func updateCountLabel(label: UILabel, count: Int) {
         label.hidden = (count == 0) ? true : false
         label.text = String(count)
@@ -72,7 +66,7 @@ class DetailViewController: UIViewController {
         changes = true
         
         if !sender.selected {
-            TwitterClient.sharedInstance.favorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
+            TwitterClient.sharedTwitterClient().favorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
                 
                 }, failure: { (error: NSError) -> () in
                     print(error.localizedDescription)
@@ -82,7 +76,7 @@ class DetailViewController: UIViewController {
             Tweet.updateButtonAndLabel(likeButton, label: likesCountLabel, selected: tweet.favorited, count: tweet.favoritesCount)
             
         } else {
-            TwitterClient.sharedInstance.unfavorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
+            TwitterClient.sharedTwitterClient().unfavorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
                 
                 }, failure: { (error: NSError) -> () in
                     print(error.localizedDescription)
@@ -98,7 +92,7 @@ class DetailViewController: UIViewController {
     @IBAction func didPressRetweetButton(sender: UIButton) {
         changes = true
         if !sender.selected {
-            TwitterClient.sharedInstance.retweet(tweetId, success: { (retweet: Tweet) -> () in
+            TwitterClient.sharedTwitterClient().retweet(tweetId, success: { (retweet: Tweet) -> () in
                 print("You retweeted \(retweet.userName)'s tweet. The retweet count is now \(retweet.retweetCount)")
                 }, failure: { (error: NSError) -> () in
                     print(error.localizedDescription)
@@ -108,7 +102,7 @@ class DetailViewController: UIViewController {
             Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
             
         } else {
-            TwitterClient.sharedInstance.unretweet(tweetId, success: { (unretweet: Tweet) -> () in
+            TwitterClient.sharedTwitterClient().unretweet(tweetId, success: { (unretweet: Tweet) -> () in
                 
                 print("You un-retweeted \(unretweet.userName)'s tweet. The retweet count is now \(unretweet.retweetCount)")
                 }, failure: { (error: NSError) -> () in
@@ -119,15 +113,5 @@ class DetailViewController: UIViewController {
             tweet.retweeted = false
             Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
         }
-        print(changes)
     }
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
 }

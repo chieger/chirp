@@ -16,15 +16,12 @@ class User: NSObject {
     var screenname: NSString?
     var profileUrl: NSURL?
     var tagLine: NSString?
-    
     var dictionary: NSDictionary?
     
     init(dictionary: NSDictionary) {
         self.dictionary = dictionary
-        
         name = dictionary["name"] as? String
         screenname = dictionary["screen_name"] as? String
-        
         let profileUrlString = dictionary["profile_image_url"] as? String
         if let profileUrlString = profileUrlString {
             profileUrl = NSURL(string: profileUrlString)
@@ -33,10 +30,10 @@ class User: NSObject {
         tagLine = dictionary["description"] as? String
     }
     
-    // I don't get the underscore or how these currentUser variables are different...
     static var _currentUser: User?
     
     class var currentUser: User? {
+        
         get {
             if _currentUser == nil {
                 let defaults = NSUserDefaults.standardUserDefaults()
@@ -46,7 +43,6 @@ class User: NSObject {
                     _currentUser = User(dictionary: dictionary)
             }
         }
-        
         return _currentUser
         }
         
@@ -59,10 +55,7 @@ class User: NSObject {
             } else {
                 defaults.setObject(nil, forKey: "currentUserData")
             }
-            
-            //defaults.setObject(user, forKey: "currentUser")
             defaults.synchronize()
         }
     }
-    
 }

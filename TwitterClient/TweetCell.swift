@@ -29,6 +29,7 @@ class TweetCell: UITableViewCell, UITextViewDelegate, TTTAttributedLabelDelegate
     var tweetId: Int!
     var tweetIdDictionary: NSDictionary!
     var blueColorTwitter: UIColor = UIColor(red: 64/255, green: 153/255, blue: 255/255, alpha: 1.0)
+    
     var tweet: Tweet! {
         didSet {
             tweetAtTextLabel.delegate = self
@@ -56,7 +57,7 @@ class TweetCell: UITableViewCell, UITextViewDelegate, TTTAttributedLabelDelegate
     
     @IBAction func didPressLikeButton(sender: UIButton) {
         if !sender.selected {
-            TwitterClient.sharedInstance.favorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
+            TwitterClient.sharedTwitterClient().favorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
                 
                 }, failure: { (error: NSError) -> () in
                     print(error.localizedDescription)
@@ -65,7 +66,7 @@ class TweetCell: UITableViewCell, UITextViewDelegate, TTTAttributedLabelDelegate
             tweet.favorited = true
             Tweet.updateButtonAndLabel(favoriteButton, label: favoriteCountLabel, selected: tweet.favorited, count: tweet.favoritesCount)
         } else {
-            TwitterClient.sharedInstance.unfavorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
+            TwitterClient.sharedTwitterClient().unfavorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
                 
                 }, failure: { (error: NSError) -> () in
                     print(error.localizedDescription)
@@ -78,7 +79,7 @@ class TweetCell: UITableViewCell, UITextViewDelegate, TTTAttributedLabelDelegate
     
     @IBAction func didPressRetweetButton(sender: UIButton) {
         if !sender.selected {
-            TwitterClient.sharedInstance.retweet(tweetId, success: { (retweet: Tweet) -> () in
+            TwitterClient.sharedTwitterClient().retweet(tweetId, success: { (retweet: Tweet) -> () in
                 print("Nice Retweet Breh!")
                 }, failure: { (error: NSError) -> () in
                     print(error.localizedDescription)
@@ -87,7 +88,7 @@ class TweetCell: UITableViewCell, UITextViewDelegate, TTTAttributedLabelDelegate
             tweet.retweeted = true
             Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
         } else {
-            TwitterClient.sharedInstance.unretweet(tweetId, success: { (unretweet: Tweet) -> () in
+            TwitterClient.sharedTwitterClient().unretweet(tweetId, success: { (unretweet: Tweet) -> () in
                 
                 print("Unretweet that jam!")
                 }, failure: { (error: NSError) -> () in
@@ -106,11 +107,5 @@ class TweetCell: UITableViewCell, UITextViewDelegate, TTTAttributedLabelDelegate
     func textView(textView: UITextView, shouldInteractWithURL URL: NSURL, inRange characterRange: NSRange) -> Bool {
         delegate?.didTapUrlLink(URL)
         return false
-    }
-    
-    override func setSelected(selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        
-        // Configure the view for the selected state
     }
 }

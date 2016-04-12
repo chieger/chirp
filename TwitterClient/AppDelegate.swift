@@ -62,7 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("We can access just the query parameter part of the url by calling .query on the url")
         print(url.query)
         print("next we will pass the url over to a custom method which can parse the url to get an access token. It is convention to call this method, handleOpenUrl")
-        TwitterClient.sharedInstance.handleOpenUrl(url)
+        TwitterClient.sharedTwitterClient().handleOpenUrl(url)
         
         return true
     }

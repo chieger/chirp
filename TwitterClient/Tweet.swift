@@ -32,31 +32,24 @@ class Tweet: NSObject {
         favoritesCount = (dictionary["favorite_count"] as? Int) ?? 0
         retweeted = dictionary["retweeted"] as? Bool
         favorited = dictionary["favorited"] as? Bool
-        
         let profileImageUrlString = dictionary.valueForKeyPath("user.profile_image_url") as? String
         profileImageUrl = NSURL(string: profileImageUrlString!)
-        
         let timestampString = dictionary["created_at"] as? String
-        
         // Date format: Tue Aug 28 21:16:23 +0000 2012
         if let timestampString = timestampString {
             let formatter = NSDateFormatter()
             formatter.dateFormat = "EEE MMM d HH:mm:ss Z y"
         timestamp = formatter.dateFromString(timestampString)
-            
         }
-        
     }
     
-    
     static func tweetsWithArray(dictionaries: [NSDictionary]) -> [Tweet] {
-        var tweets = [Tweet]()
         
+        var tweets = [Tweet]()
         for dictionary in dictionaries {
             let tweet = Tweet(dictionary: dictionary)
             tweets.append(tweet)
         }
-        
         return tweets
     }
     
@@ -82,7 +75,4 @@ class Tweet: NSObject {
         updateButtonState(button, selected: selected, count: count)
         updateCountLabel(label, count: count)
     }
-
-    
-
 }

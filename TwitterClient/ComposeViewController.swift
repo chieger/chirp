@@ -14,15 +14,12 @@ protocol ComposeViewControllerDelegate {
 }
 
 class ComposeViewController: UIViewController, UITextViewDelegate {
-
     
     @IBOutlet weak var tweetTextView: SZTextView!
-    
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var tweetButton: UIButton!
     
     var delegate: ComposeViewControllerDelegate?
-    
     var blueColorTwitter: UIColor = UIColor(red: 64/255, green: 153/255, blue: 255/255, alpha: 1.0)
     
     override func viewDidLoad() {
@@ -32,14 +29,7 @@ class ComposeViewController: UIViewController, UITextViewDelegate {
         tweetButton.enabled = false
         tweetButton.backgroundColor = UIColor.lightGrayColor()
         backButton.tintColor = blueColorTwitter
-        
-       tweetButton.layer.cornerRadius = 20
-        
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        tweetButton.layer.cornerRadius = 20
     }
     
     func textViewDidChange(textView: UITextView) {
@@ -57,7 +47,6 @@ class ComposeViewController: UIViewController, UITextViewDelegate {
                     self.tweetButton.layer.shadowColor = UIColor.darkGrayColor().CGColor
                     self.tweetButton.layer.shadowOffset = CGSize(width: 2, height: 2)
                     self.tweetButton.layer.shadowOpacity = 1.0
-
             })
         }
     }
@@ -66,29 +55,17 @@ class ComposeViewController: UIViewController, UITextViewDelegate {
     @IBAction func didPressBack(sender: AnyObject) {
         dismissViewControllerAnimated(true, completion: nil)
     }
-
+    
     @IBAction func didTapTweet(sender: AnyObject) {
         let tweetText = tweetTextView.text
         let parameters: NSDictionary = ["status": tweetText]
-        TwitterClient.sharedInstance.composeTweet(parameters, success: { (tweet: Tweet) in
-        print("You made a new tweet!!")
+        TwitterClient.sharedTwitterClient().composeTweet(parameters, success: { (tweet: Tweet) in
+            print("You made a new tweet!!")
             self.delegate?.getNewTimeline()
             self.dismissViewControllerAnimated(true, completion: nil)
             
-    }) { (error: NSError) in
+        }) { (error: NSError) in
             print(error.localizedDescription)
         }
-    
     }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

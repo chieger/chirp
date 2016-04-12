@@ -31,7 +31,7 @@ class LoginViewController: UIViewController {
         // TwitterClient.sharedInstance is a reference to the singleton instance of TwitterClient that we have stored in the TwitterClient class.
         // .login references the login method available to all instances of TwitterClient
         // We also send some instructions for printing the errors when an error is passed into the input of the closure
-        TwitterClient.sharedInstance.login({ () -> () in
+        TwitterClient.sharedTwitterClient().login({ () -> () in
             print("I've logged in")
             self.performSegueWithIdentifier("loginSegue", sender: nil)
             
