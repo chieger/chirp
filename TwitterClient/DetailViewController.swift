@@ -9,7 +9,7 @@
 import UIKit
 
 protocol DetailViewControllerDelegate {
-  func updateCellWithIndexPath(indexPath: NSIndexPath)
+  func updateCellWithIndexPathAnimated(indexPath: NSIndexPath, animation: UITableViewRowAnimation)
 }
 
 class DetailViewController: UIViewController {
@@ -20,50 +20,36 @@ class DetailViewController: UIViewController {
   @IBOutlet weak var textLabel: UILabel!
   @IBOutlet weak var dateLabel: UILabel!
   @IBOutlet weak var retweetCountLabel: UILabel!
-  @IBOutlet weak var likesCountLabel: UILabel!
-  @IBOutlet weak var likeButton: UIButton!
+  @IBOutlet weak var favoriteCountLabel: UILabel!
+  @IBOutlet weak var favoriteButton: UIButton!
   @IBOutlet weak var retweetButton: UIButton!
   
   var delegate: DetailViewControllerDelegate?
-  var tweetId: Int!
-  var tweetIdDictionary: NSDictionary!
   var changes: Bool = false
   var tweet: Tweet!
-  
   var indexPath: NSIndexPath?
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    
-    screennameLabel.text = tweet.screenName
-    usernameLabel.text = tweet.userName
+    screennameLabel.text = tweet.screenname
+    usernameLabel.text = tweet.username
     textLabel.text = tweet.text
     profileImageView.setImageWithURL(tweet.profileImageUrl)
-    profileImageView.layer.cornerRadius = 4
-    profileImageView.clipsToBounds = true
-    tweetId = tweet.tweetId
-    tweetIdDictionary = ["id": tweetId]
-    Tweet.updateButtonAndLabel(likeButton, label: likesCountLabel, selected: tweet.favorited, count: tweet.favoritesCount)
-    Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
+    styleProfileImage()
+    updateLabelsAndButtons()
   }
   
   override func viewWillDisappear(animated: Bool) {
     super.viewWillDisappear(animated)
     if changes {
       if let indexPath = indexPath {
-        delegate?.updateCellWithIndexPath(indexPath)
+        delegate?.updateCellWithIndexPathAnimated(indexPath, animation: .Bottom)
       }
     }
   }
   
-  func updateCountLabel(label: UILabel, count: Int) {
-    label.hidden = (count == 0) ? true : false
-    label.text = String(count)
-  }
-  
   @IBAction func didPressFavoriteButton(sender: UIButton) {
     changes = true
-    
     if !sender.selected {
       TwitterClient.sharedTwitterClient().favorite(tweet.tweetId, success: { (favoritedTweet: Tweet) -> () in
         
@@ -72,41 +58,62 @@ class DetailViewController: UIViewController {
       })
       tweet.favoritesCount += 1
       tweet.favorited = true
-      Tweet.updateButtonAndLabel(likeButton, label: likesCountLabel, selected: tweet.favorited, count: tweet.favoritesCount)
-      
+      updateLabelsAndButtons()
     } else {
       TwitterClient.sharedTwitterClient().unfavorite(tweet.tweetId, success: { (favoritedTweet: Tweet) -> () in
         
         }, failure: { (error: NSError) -> () in
           print(error.localizedDescription)
       })
-      
       tweet.favoritesCount -= 1
       tweet.favorited = false
-      Tweet.updateButtonAndLabel(likeButton, label: likesCountLabel, selected: tweet.favorited, count: tweet.favoritesCount)
+      updateLabelsAndButtons()
     }
   }
   
   @IBAction func didPressRetweetButton(sender: UIButton) {
     changes = true
     if !sender.selected {
-      TwitterClient.sharedTwitterClient().retweet(tweetId, success: { (retweet: Tweet) -> () in
+      TwitterClient.sharedTwitterClient().retweet(tweet.tweetId, success: { (retweet: Tweet) -> () in
         }, failure: { (error: NSError) -> () in
           print(error.localizedDescription)
       })
       tweet.retweetCount += 1
       tweet.retweeted = true
-      Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
-      
+      updateLabelsAndButtons()
     } else {
-      TwitterClient.sharedTwitterClient().unretweet(tweetId, success: { (unretweet: Tweet) -> () in
+      TwitterClient.sharedTwitterClient().unretweet(tweet.tweetId, success: { (unretweet: Tweet) -> () in
         }, failure: { (error: NSError) -> () in
           print(error.localizedDescription)
       })
-      
       tweet.retweetCount -= 1
       tweet.retweeted = false
-      Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
+      updateLabelsAndButtons()
     }
+  }
+  
+  func updateLabelsAndButtons() {
+    updateCountLabel(favoriteCountLabel, count: tweet.favoritesCount)
+    updateCountLabel(retweetCountLabel, count: tweet.retweetCount)
+    updateButton(favoriteButton, selected: tweet.favorited)
+    updateButton(retweetButton, selected: tweet.retweeted)
+  }
+  
+  func updateCountLabel(label: UILabel, count: Int?) {
+    label.hidden = (count == 0)
+    if let count = count {
+    label.text = String(count)
+    }
+  }
+  
+  func updateButton(button: UIButton, selected: Bool?) {
+    if let selected = selected {
+      button.selected = selected
+    }
+  }
+  
+  func styleProfileImage() {
+    profileImageView.layer.cornerRadius = 4
+    profileImageView.clipsToBounds = true
   }
 }

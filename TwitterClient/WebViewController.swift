@@ -7,9 +7,8 @@
 //
 
 import UIKit
-import TTTAttributedLabel
 
-class WebViewController: UIViewController, TTTAttributedLabelDelegate  {
+class WebViewController: UIViewController {
   
   @IBOutlet weak var webView: UIWebView!
   
@@ -17,7 +16,9 @@ class WebViewController: UIViewController, TTTAttributedLabelDelegate  {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+    navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarPosition: .Any, barMetrics: .Default)
+    navigationController?.navigationBar.translucent = false
+    navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
     if let url = url {
       let request = NSURLRequest(URL: url)
       webView.loadRequest(request)

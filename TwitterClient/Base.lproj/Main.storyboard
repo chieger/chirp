@@ -186,14 +186,14 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Compose" id="ILN-Fo-OIm">
                             <connections>
-                                <segue destination="YPc-n9-H8k" kind="presentation" identifier="ComposeSegue" id="Fjt-OA-rTC"/>
+                                <segue destination="uwn-Ef-dYM" kind="presentation" identifier="ComposeSegue" id="Fjt-OA-rTC"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="tableView" destination="WQ4-P0-srp" id="1h4-Pr-VVr"/>
-                        <segue destination="KRo-pL-Z55" kind="presentation" identifier="WebViewSegue" id="rC3-Pi-Iia"/>
+                        <segue destination="p3J-p6-5Lj" kind="presentation" identifier="WebViewSegue" id="rC3-Pi-Iia"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ibz-0J-xpB" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -216,13 +216,6 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
                             </webView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n0X-Od-uv7">
-                                <rect key="frame" x="260" y="20" width="34" height="30"/>
-                                <state key="normal" title="Back"/>
-                                <connections>
-                                    <action selector="didTapBackButton:" destination="KRo-pL-Z55" eventType="touchUpInside" id="utm-1n-xu0"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -232,6 +225,13 @@
                             <constraint firstItem="Go7-0W-hT3" firstAttribute="top" secondItem="LDM-NI-6Pf" secondAttribute="bottom" id="zfc-DN-RHx"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="kNz-rP-D1s">
+                        <barButtonItem key="rightBarButtonItem" title="Back" id="VJg-X1-hSm">
+                            <connections>
+                                <action selector="didTapBackButton:" destination="KRo-pL-Z55" id="cmK-4R-N2j"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="webView" destination="LDM-NI-6Pf" id="mzB-CN-UP4"/>
@@ -239,7 +239,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="i2g-tl-w5c" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="825" y="1167"/>
+            <point key="canvasLocation" x="825" y="1867"/>
         </scene>
         <!--Compose View Controller-->
         <scene sceneID="PBw-6n-3CQ">
@@ -253,20 +253,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="65S-yR-r1O">
-                                <rect key="frame" x="264" y="20" width="50" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="AKA-9w-1h2"/>
-                                    <constraint firstAttribute="width" constant="50" id="vd3-lu-rxG"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <state key="normal" title="Back"/>
-                                <connections>
-                                    <action selector="didPressBack:" destination="YPc-n9-H8k" eventType="touchUpInside" id="5VN-d1-i2s"/>
-                                </connections>
-                            </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Acy-Yh-FOn" customClass="SZTextView">
-                                <rect key="frame" x="10" y="54" width="300" height="164"/>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Acy-Yh-FOn" customClass="SZTextView">
+                                <rect key="frame" x="10" y="72" width="300" height="146"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="18"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -303,28 +291,33 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="65S-yR-r1O" secondAttribute="trailing" constant="6" id="1BW-dW-kPt"/>
                             <constraint firstItem="ZxZ-6I-Vs0" firstAttribute="top" secondItem="Acy-Yh-FOn" secondAttribute="bottom" constant="350" id="1jr-DM-Z0J"/>
-                            <constraint firstItem="Acy-Yh-FOn" firstAttribute="top" secondItem="65S-yR-r1O" secondAttribute="bottom" constant="4" id="49y-l4-mXT"/>
+                            <constraint firstItem="Acy-Yh-FOn" firstAttribute="top" secondItem="ae3-FL-ImM" secondAttribute="bottom" constant="8" id="5vz-gy-CBw"/>
                             <constraint firstItem="nRg-on-iXt" firstAttribute="centerY" secondItem="OO9-fN-X8D" secondAttribute="centerY" id="6TA-3o-oLJ"/>
                             <constraint firstAttribute="trailing" secondItem="nRg-on-iXt" secondAttribute="trailing" constant="20" id="Ac7-Kf-dUk"/>
-                            <constraint firstItem="65S-yR-r1O" firstAttribute="top" secondItem="ae3-FL-ImM" secondAttribute="bottom" id="FRj-Gj-HKa"/>
                             <constraint firstItem="nRg-on-iXt" firstAttribute="leading" secondItem="OO9-fN-X8D" secondAttribute="trailing" constant="8" id="f12-ze-Pd7"/>
                             <constraint firstItem="Acy-Yh-FOn" firstAttribute="leading" secondItem="tzX-I0-SK7" secondAttribute="leading" constant="10" id="j9D-1K-LTm"/>
                             <constraint firstAttribute="trailing" secondItem="Acy-Yh-FOn" secondAttribute="trailing" constant="10" id="qUt-J3-08V"/>
                             <constraint firstItem="nRg-on-iXt" firstAttribute="top" secondItem="Acy-Yh-FOn" secondAttribute="bottom" constant="20" id="qh6-Bn-cjS"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="p12-IE-U3t">
+                        <barButtonItem key="rightBarButtonItem" title="Back" id="V5n-Y9-Njp">
+                            <connections>
+                                <action selector="didTapBack:" destination="YPc-n9-H8k" id="9sg-dm-B76"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
-                        <outlet property="backButton" destination="65S-yR-r1O" id="wYa-t7-DyX"/>
+                        <outlet property="characterCountLabel" destination="OO9-fN-X8D" id="yLG-PV-DXO"/>
                         <outlet property="tweetButton" destination="nRg-on-iXt" id="Nxb-AR-gyQ"/>
                         <outlet property="tweetTextView" destination="Acy-Yh-FOn" id="Dmf-2L-PNL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OYI-RS-YdR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1191" y="1167"/>
+            <point key="canvasLocation" x="1223" y="1867"/>
         </scene>
         <!--Detail View Controller-->
         <scene sceneID="SKG-4s-Sfv">
@@ -472,8 +465,8 @@
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="dateLabel" destination="oQq-VY-Ak2" id="wuI-9k-7Q4"/>
-                        <outlet property="likeButton" destination="HDw-eE-c2B" id="9ow-bH-J73"/>
-                        <outlet property="likesCountLabel" destination="9pu-1y-vUo" id="P1h-Ik-hC8"/>
+                        <outlet property="favoriteButton" destination="HDw-eE-c2B" id="rBB-Tf-eGb"/>
+                        <outlet property="favoriteCountLabel" destination="9pu-1y-vUo" id="pG5-eq-qoZ"/>
                         <outlet property="profileImageView" destination="YAV-77-KWO" id="ktZ-Fh-zc0"/>
                         <outlet property="retweetButton" destination="Ru6-3N-nur" id="xUe-48-nee"/>
                         <outlet property="retweetCountLabel" destination="MzL-xo-DGx" id="MRp-H6-NZB"/>
@@ -504,6 +497,42 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="J0u-o5-Cmu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="569" y="399"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="nnO-7v-ZeO">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="p3J-p6-5Lj" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="9gi-fW-yHc">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="KRo-pL-Z55" kind="relationship" relationship="rootViewController" id="D7M-tn-9D1"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fum-p8-pZq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="825" y="1167"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="eUT-d2-K1v">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="uwn-Ef-dYM" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="kPm-At-C0v">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="YPc-n9-H8k" kind="relationship" relationship="rootViewController" id="vsS-EJ-Ij7"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hvV-nd-YBz" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1223" y="1167"/>
         </scene>
     </scenes>
     <resources>

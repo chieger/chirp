@@ -12,8 +12,8 @@ class Tweet: NSObject {
   
   var tweetId: Int?
   var text: String?
-  var userName: String?
-  var screenName: String?
+  var username: String?
+  var screenname: String?
   var timestamp: NSDate?
   var timeStampString: String?
   var retweetCount: Int = 0
@@ -26,8 +26,8 @@ class Tweet: NSObject {
     
     tweetId = dictionary["id"] as? Int
     text = dictionary["text"] as? String
-    userName = dictionary.valueForKeyPath("user.name") as? String
-    screenName = dictionary.valueForKeyPath("user.screen_name") as? String
+    username = dictionary.valueForKeyPath("user.name") as? String
+    screenname = dictionary.valueForKeyPath("user.screen_name") as? String
     retweetCount = (dictionary["retweet_count"] as? Int) ?? 0
     favoritesCount = (dictionary["favorite_count"] as? Int) ?? 0
     retweeted = dictionary["retweeted"] as? Bool

@@ -9,130 +9,90 @@
 import UIKit
 import AFNetworking
 
-class TweetsViewController: UIViewController, UITableViewDelegate, UIScrollViewDelegate, TweetCellDelegate, DetailViewControllerDelegate, ComposeViewControllerDelegate {
+class TweetsViewController: UIViewController {
   
   @IBOutlet var tableView: UITableView!
   
   var tweets: [Tweet] = []
-  var olderTweetsParameters: NSDictionary!
-  var newerTweetsParameters: NSDictionary!
-  var blueColorTwitter: UIColor = UIColor(red: 64/255, green: 153/255, blue: 255/255, alpha: 1.0)
   var refreshControl: UIRefreshControl!
   var dataLoading: Bool = false
   var url: NSURL?
-  var currentFavoritesCount: Int?
+  var newlyCreatedTweet: Tweet? {
+    didSet {
+      tweets = [newlyCreatedTweet!] + tweets
+      tableView.reloadData()
+    }
+  }
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    
-    let twitterTitleLogo = UIImage(named: "Twitter_logo_blue_32")
-    navigationItem.titleView = UIImageView(image: twitterTitleLogo)
-    navigationItem.leftBarButtonItem?.tintColor = blueColorTwitter
-    navigationItem.rightBarButtonItem?.tintColor = blueColorTwitter
-    
-    refreshControl = UIRefreshControl()
-    refreshControl.addTarget(self, action: #selector(TweetsViewController.refreshControlAction(_:)), forControlEvents: UIControlEvents.ValueChanged)
-    tableView.insertSubview(refreshControl, atIndex: 0)
-    
+    setupNavigationBar()
+    setupRefreshControl()
     tableView.delegate = self
     tableView.dataSource = self
     tableView.rowHeight = UITableViewAutomaticDimension
     tableView.estimatedRowHeight = 120
+    getHomeTimeline()
+  }
+  
+  func getHomeTimeline() {
     TwitterClient.sharedTwitterClient().getHomeTimeline({ (tweets: [Tweet]) in
       self.tweets = tweets
       self.tableView.reloadData()
+      self.refreshControl.endRefreshing()
     }) { (error: NSError) in
-        print(error.localizedDescription)
+      print(error.localizedDescription)
+      self.refreshControl.endRefreshing()
     }
   }
   
-//  func getNewTimeline() {
-//    TwitterClient.sharedTwitterClient().newTimeline(newerTweetsParameters, success: { (newTweets: [Tweet]) -> () in
-//      if !newTweets.isEmpty {
-//        let newestTweet = newTweets[0]
-//        let sinceId = newestTweet.tweetId
-//        self.newerTweetsParameters = ["since_id": sinceId!]
-//        self.tweets = newTweets + self.tweets
-//        // Reload table view data with animation
-//        let range = NSMakeRange(0, self.tableView.numberOfSections)
-//        let sections = NSIndexSet(indexesInRange: range)
-//        self.tableView.reloadSections(sections, withRowAnimation: .Automatic)
-//      }
-//      self.refreshControl.endRefreshing()
-//    }) { (error: NSError) -> () in
-//      self.refreshControl.endRefreshing()
-//    }
-//  }
-  
   func refreshControlAction(refreshControl: UIRefreshControl) {
-    TwitterClient.sharedTwitterClient().getHomeTimeline({ (tweets: [Tweet]) in
-      self.tweets = tweets
-      self.tableView.reloadData()
-      refreshControl.endRefreshing()
-    }) { (error: NSError) in
-        print(error.localizedDescription)
-        refreshControl.endRefreshing()
-    }
+    getHomeTimeline()
   }
   
   @IBAction func didPressLogoutButton(sender: AnyObject) {
     TwitterClient.sharedTwitterClient().logout()
   }
   
-  func updateCellWithIndexPath(indexPath: NSIndexPath) {
-    let indexPathArray: [NSIndexPath] = [indexPath]
-    tableView.reloadRowsAtIndexPaths(indexPathArray, withRowAnimation: .Top)
-  }
-  
-  func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    tableView.deselectRowAtIndexPath(indexPath, animated: true)
-  }
-  
-  // Infinite scrolling
-  func scrollViewDidScroll(scrollView: UIScrollView) {
-    if !dataLoading {
-      let scrollviewContentHeight = tableView.contentSize.height
-      let scrollOffsetThreshold = scrollviewContentHeight - tableView.bounds.height
-      if scrollView.contentOffset.y > scrollOffsetThreshold && tableView.dragging {
-        dataLoading = true
-        
-        TwitterClient.sharedTwitterClient().getHomeTimeline(tweets.last, sinceTweet: nil, success: { (tweets:[Tweet]) in
-          self.tweets += tweets
-          self.tableView.reloadData()
-          self.dataLoading = false
-          }, failure: { (error: NSError) in
-            print(error.localizedDescription)
-        })
-      }
-    }
-  }
-  
-  func didTapUrlLink(url: NSURL) {
-    self.url = url
-    performSegueWithIdentifier("WebViewSegue", sender: nil)
-    
-  }
-  
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
     if segue.identifier == "WebViewSegue" {
-      let webViewController = segue.destinationViewController as! WebViewController
+      let webNavigationController = segue.destinationViewController as! UINavigationController
+      let webViewController = webNavigationController.topViewController as! WebViewController
       webViewController.url = self.url
     } else if segue.identifier == "DetailSegue" {
       let cell = sender as! UITableViewCell
       let indexPath = tableView.indexPathForCell(cell)
       let tweet = tweets[indexPath!.row]
-      if let currentFavoritesCount = currentFavoritesCount {
-        tweet.favoritesCount = currentFavoritesCount
-      }
       let detailViewController = segue.destinationViewController as! DetailViewController
       detailViewController.delegate = self
       detailViewController.indexPath = indexPath
       detailViewController.tweet = tweet
     } else if segue.identifier == "ComposeSegue" {
-      let composeViewController = segue.destinationViewController as! ComposeViewController
+      let composeNavigationController = segue.destinationViewController as! UINavigationController
+      let composeViewController = composeNavigationController.topViewController as! ComposeViewController
       composeViewController.delegate = self
-      
     }
+  }
+  
+  func setupNavigationBar() {
+    navigationController?.navigationBar.translucent = false
+    navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
+    let twitterTitleLogo = UIImage(named: "Twitter_logo_blue_32")
+    navigationItem.titleView = UIImageView(image: twitterTitleLogo)
+    navigationItem.leftBarButtonItem?.tintColor = UIColor.twitterBlueColor()
+    navigationItem.rightBarButtonItem?.tintColor = UIColor.twitterBlueColor()
+  }
+  
+  func setupRefreshControl() {
+    refreshControl = UIRefreshControl()
+    refreshControl.addTarget(self, action: #selector(TweetsViewController.refreshControlAction(_:)), forControlEvents: UIControlEvents.ValueChanged)
+    tableView.insertSubview(refreshControl, atIndex: 0)
+  }
+  
+  func reloadTableViewWithAnimation(animation: UITableViewRowAnimation) {
+    let range = NSMakeRange(0, tableView.numberOfSections)
+    let sections = NSIndexSet(indexesInRange: range)
+    tableView.reloadSections(sections, withRowAnimation: animation)
   }
 }
 
@@ -147,4 +107,51 @@ extension TweetsViewController: UITableViewDataSource {
     cell.tweet = tweets[indexPath.row]
     return cell
   }
+}
+
+extension TweetsViewController: UITableViewDelegate {
+  func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    tableView.deselectRowAtIndexPath(indexPath, animated: true)
+  }
+}
+
+extension TweetsViewController: UIScrollViewDelegate {
+  // Infinite scrolling
+  func scrollViewDidScroll(scrollView: UIScrollView) {
+    if !dataLoading {
+      let scrollviewContentHeight = tableView.contentSize.height
+      let scrollOffsetThreshold = scrollviewContentHeight - tableView.bounds.height
+      if scrollView.contentOffset.y > scrollOffsetThreshold && tableView.dragging {
+        dataLoading = true
+        
+        TwitterClient.sharedTwitterClient().getHomeTimeline(tweets.last,
+                                                            sinceTweet: nil,
+                                                            success: { (tweets:[Tweet]) in
+          self.tweets += tweets
+          self.tableView.reloadData()
+          self.dataLoading = false
+          }, failure: { (error: NSError) in
+            print(error.localizedDescription)
+        })
+      }
+    }
+  }
+}
+
+extension TweetsViewController: TweetCellDelegate {
+  func didTapUrlLink(url: NSURL) {
+    self.url = url
+    performSegueWithIdentifier("WebViewSegue", sender: nil)
+  }
+}
+
+extension TweetsViewController: DetailViewControllerDelegate {
+  func updateCellWithIndexPathAnimated(indexPath: NSIndexPath, animation: UITableViewRowAnimation) {
+    let indexPathArray: [NSIndexPath] = [indexPath]
+    tableView.reloadRowsAtIndexPaths(indexPathArray, withRowAnimation: animation)
+  }
+}
+
+extension TweetsViewController: ComposeViewControllerDelegate {
+  
 }

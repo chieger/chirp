@@ -14,7 +14,7 @@ protocol TweetCellDelegate {
   func didTapUrlLink (url: NSURL)
 }
 
-class TweetCell: UITableViewCell, UITextViewDelegate, TTTAttributedLabelDelegate {
+class TweetCell: UITableViewCell {
   
   @IBOutlet weak var favoriteButton: UIButton!
   @IBOutlet weak var retweetButton: UIButton!
@@ -26,17 +26,16 @@ class TweetCell: UITableViewCell, UITextViewDelegate, TTTAttributedLabelDelegate
   @IBOutlet weak var favoriteCountLabel: UILabel!
   
   var delegate: TweetCellDelegate?
-  var blueColorTwitter: UIColor = UIColor(red: 64/255, green: 153/255, blue: 255/255, alpha: 1.0)
   
   var tweet: Tweet! {
     didSet {
       tweetAtTextLabel.delegate = self
       tweetAtTextLabel.enabledTextCheckingTypes = NSTextCheckingType.Link.rawValue
       tweetAtTextLabel.activeLinkAttributes = [kCTForegroundColorAttributeName: UIColor.greenColor()]
-      tweetAtTextLabel.linkAttributes = [kCTForegroundColorAttributeName: blueColorTwitter, NSUnderlineColorAttributeName: blueColorTwitter , NSUnderlineStyleAttributeName: NSNumber(bool: false)]
+      tweetAtTextLabel.linkAttributes = [kCTForegroundColorAttributeName: UIColor.twitterBlueColor(), NSUnderlineColorAttributeName: UIColor.twitterBlueColor() , NSUnderlineStyleAttributeName: NSNumber(bool: false)]
       
-      screenNameLabel.text = tweet.screenName
-      usernameLabel.text = tweet.userName
+      screenNameLabel.text = tweet.screenname
+      usernameLabel.text = tweet.username
       tweetAtTextLabel.setText(tweet.text)
       if let profileImageUrl = tweet.profileImageUrl {
         profileImageView.setImageWithURL(profileImageUrl)
@@ -47,10 +46,6 @@ class TweetCell: UITableViewCell, UITextViewDelegate, TTTAttributedLabelDelegate
       Tweet.updateButtonAndLabel(favoriteButton, label: favoriteCountLabel, selected: tweet.favorited, count: tweet.favoritesCount)
       Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
     }
-  }
-  
-  override func awakeFromNib() {
-    super.awakeFromNib()
   }
   
   @IBAction func didPressLikeButton(sender: UIButton) {
@@ -97,13 +92,10 @@ class TweetCell: UITableViewCell, UITextViewDelegate, TTTAttributedLabelDelegate
       Tweet.updateButtonAndLabel(retweetButton, label: retweetCountLabel, selected: tweet.retweeted, count: tweet.retweetCount)
     }
   }
-  
+}
+
+extension TweetCell: TTTAttributedLabelDelegate {
   func attributedLabel(label: TTTAttributedLabel!, didSelectLinkWithURL url: NSURL!) {
     delegate?.didTapUrlLink(url)
-  }
-  
-  func textView(textView: UITextView, shouldInteractWithURL URL: NSURL, inRange characterRange: NSRange) -> Bool {
-    delegate?.didTapUrlLink(URL)
-    return false
   }
 }
