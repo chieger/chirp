@@ -65,7 +65,7 @@ class DetailViewController: UIViewController {
     changes = true
     
     if !sender.selected {
-      TwitterClient.sharedTwitterClient().favorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
+      TwitterClient.sharedTwitterClient().favorite(tweet.tweetId, success: { (favoritedTweet: Tweet) -> () in
         
         }, failure: { (error: NSError) -> () in
           print(error.localizedDescription)
@@ -75,7 +75,7 @@ class DetailViewController: UIViewController {
       Tweet.updateButtonAndLabel(likeButton, label: likesCountLabel, selected: tweet.favorited, count: tweet.favoritesCount)
       
     } else {
-      TwitterClient.sharedTwitterClient().unfavorite(tweetIdDictionary, success: { (favoritedTweet: Tweet) -> () in
+      TwitterClient.sharedTwitterClient().unfavorite(tweet.tweetId, success: { (favoritedTweet: Tweet) -> () in
         
         }, failure: { (error: NSError) -> () in
           print(error.localizedDescription)

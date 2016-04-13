@@ -38,65 +38,41 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UIScrollViewD
     tableView.dataSource = self
     tableView.rowHeight = UITableViewAutomaticDimension
     tableView.estimatedRowHeight = 120
-    getHomeTimeline()
-  }
-  
-  func getHomeTimeline() {
-    TwitterClient.sharedTwitterClient().homeTimeline({ (tweets: [Tweet]) -> () in
+    TwitterClient.sharedTwitterClient().getHomeTimeline({ (tweets: [Tweet]) in
       self.tweets = tweets
-      let oldestTweet = tweets[tweets.count - 1]
-      var maxId = oldestTweet.tweetId
-      maxId! -= 1
-      self.olderTweetsParameters = ["max_id": maxId!]
-      let newestTweet = tweets[0]
-      let sinceId = newestTweet.tweetId
-      self.newerTweetsParameters = ["since_id": sinceId!]
       self.tableView.reloadData()
-      self.refreshControl.endRefreshing()
-      
-    }) { (error: NSError) -> () in
-      print(error.localizedDescription)
-      self.refreshControl.endRefreshing()
+    }) { (error: NSError) in
+        print(error.localizedDescription)
     }
   }
   
-  
-  
-//  func getOldTimeline() {
-//    TwitterClient.sharedTwitterClient().oldHomeTimeline(olderTweetsParameters, success: { (oldTweets: [Tweet]) -> () in
-//      let oldestTweet = oldTweets[oldTweets.count - 1]
-//      if var maxId = oldestTweet.tweetId {
-//        maxId -= 1
-//        self.olderTweetsParameters = ["max_id": maxId]
-//        self.tweets += oldTweets
-//        self.tableView.reloadData()
+//  func getNewTimeline() {
+//    TwitterClient.sharedTwitterClient().newTimeline(newerTweetsParameters, success: { (newTweets: [Tweet]) -> () in
+//      if !newTweets.isEmpty {
+//        let newestTweet = newTweets[0]
+//        let sinceId = newestTweet.tweetId
+//        self.newerTweetsParameters = ["since_id": sinceId!]
+//        self.tweets = newTweets + self.tweets
+//        // Reload table view data with animation
+//        let range = NSMakeRange(0, self.tableView.numberOfSections)
+//        let sections = NSIndexSet(indexesInRange: range)
+//        self.tableView.reloadSections(sections, withRowAnimation: .Automatic)
 //      }
-//      self.dataLoading = false
+//      self.refreshControl.endRefreshing()
 //    }) { (error: NSError) -> () in
-//      print(error.localizedDescription)
+//      self.refreshControl.endRefreshing()
 //    }
 //  }
   
-  func getNewTimeline() {
-    TwitterClient.sharedTwitterClient().newTimeline(newerTweetsParameters, success: { (newTweets: [Tweet]) -> () in
-      if !newTweets.isEmpty {
-        let newestTweet = newTweets[0]
-        let sinceId = newestTweet.tweetId
-        self.newerTweetsParameters = ["since_id": sinceId!]
-        self.tweets = newTweets + self.tweets
-        // Reload table view data with animation
-        let range = NSMakeRange(0, self.tableView.numberOfSections)
-        let sections = NSIndexSet(indexesInRange: range)
-        self.tableView.reloadSections(sections, withRowAnimation: .Automatic)
-      }
-      self.refreshControl.endRefreshing()
-    }) { (error: NSError) -> () in
-      self.refreshControl.endRefreshing()
-    }
-  }
-  
   func refreshControlAction(refreshControl: UIRefreshControl) {
-    getNewTimeline()
+    TwitterClient.sharedTwitterClient().getHomeTimeline({ (tweets: [Tweet]) in
+      self.tweets = tweets
+      self.tableView.reloadData()
+      refreshControl.endRefreshing()
+    }) { (error: NSError) in
+        print(error.localizedDescription)
+        refreshControl.endRefreshing()
+    }
   }
   
   @IBAction func didPressLogoutButton(sender: AnyObject) {
@@ -119,8 +95,9 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UIScrollViewD
       let scrollOffsetThreshold = scrollviewContentHeight - tableView.bounds.height
       if scrollView.contentOffset.y > scrollOffsetThreshold && tableView.dragging {
         dataLoading = true
-        TwitterClient.sharedTwitterClient().getOlderTimeline(tweets, success: { (olderTweets: [Tweet]) in
-          self.tweets += olderTweets
+        
+        TwitterClient.sharedTwitterClient().getHomeTimeline(tweets.last, sinceTweet: nil, success: { (tweets:[Tweet]) in
+          self.tweets += tweets
           self.tableView.reloadData()
           self.dataLoading = false
           }, failure: { (error: NSError) in
