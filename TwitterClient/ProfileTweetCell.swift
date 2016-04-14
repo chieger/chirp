@@ -9,12 +9,12 @@
 import UIKit
 import TTTAttributedLabel
 
-protocol TweetCellDelegate {
-  var url: NSURL? {get set}
-  func didTapUrlLink (url: NSURL)
-}
+//protocol TweetCellDelegate {
+//  var url: NSURL? {get set}
+//  func didTapUrlLink (url: NSURL)
+//}
 
-class TweetCell: UITableViewCell {
+class ProfileTweetCell: UITableViewCell {
   
   @IBOutlet weak var favoriteButton: UIButton!
   @IBOutlet weak var retweetButton: UIButton!
@@ -25,7 +25,7 @@ class TweetCell: UITableViewCell {
   @IBOutlet weak var retweetCountLabel: UILabel!
   @IBOutlet weak var favoriteCountLabel: UILabel!
   
-  var delegate: TweetCellDelegate?
+  //var delegate: TweetCellDelegate?
   
   var tweet: Tweet! {
     didSet {
@@ -34,8 +34,8 @@ class TweetCell: UITableViewCell {
       tweetAtTextLabel.activeLinkAttributes = [kCTForegroundColorAttributeName: UIColor.greenColor()]
       tweetAtTextLabel.linkAttributes = [kCTForegroundColorAttributeName: UIColor.twitterBlueColor(), NSUnderlineColorAttributeName: UIColor.twitterBlueColor() , NSUnderlineStyleAttributeName: NSNumber(bool: false)]
       
-      screenNameLabel.text = tweet.screenname
-      usernameLabel.text = tweet.username
+      screenNameLabel.text = User.currentUser?.username
+      usernameLabel.text = User.currentUser?.username
       tweetAtTextLabel.setText(tweet.text)
       if let profileImageUrl = tweet.profileImageUrl {
         profileImageView.setImageWithURL(profileImageUrl)
@@ -116,8 +116,8 @@ class TweetCell: UITableViewCell {
   }
 }
 
-extension TweetCell: TTTAttributedLabelDelegate {
+extension ProfileTweetCell: TTTAttributedLabelDelegate {
   func attributedLabel(label: TTTAttributedLabel!, didSelectLinkWithURL url: NSURL!) {
-    delegate?.didTapUrlLink(url)
+    //delegate?.didTapUrlLink(url)
   }
 }

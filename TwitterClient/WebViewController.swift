@@ -16,16 +16,21 @@ class WebViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarPosition: .Any, barMetrics: .Default)
-    navigationController?.navigationBar.translucent = false
-    navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
     if let url = url {
       let request = NSURLRequest(URL: url)
       webView.loadRequest(request)
+      setupNavigationBar()
     }
   }
   
   @IBAction func didTapBackButton(sender: AnyObject) {
     dismissViewControllerAnimated(true, completion: nil)
+  }
+  
+  func setupNavigationBar() {
+    navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarPosition: .Any, barMetrics: .Default)
+    navigationController?.navigationBar.translucent = false
+    navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
+    navigationItem.rightBarButtonItem?.tintColor = UIColor.twitterBlueColor()
   }
 }

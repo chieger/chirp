@@ -24,12 +24,9 @@ class ComposeViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     tweetTextView.delegate = self
-    tweetButton.enabled = false
-    tweetButton.backgroundColor = UIColor.lightGrayColor()
-    tweetButton.layer.cornerRadius = 10
-    
-    navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarPosition: .Any, barMetrics: .Default)
-    navigationController?.navigationBar.shadowImage = UIImage()
+    setupNavigationController()
+    disableTweetButton()
+    print(User.currentUser?.profileImageUrl)
   }
   
   @IBAction func didTapBack(sender: AnyObject) {
@@ -52,20 +49,35 @@ class ComposeViewController: UIViewController {
     delegate?.newlyCreatedTweet = newTweet
     dismissViewControllerAnimated(true, completion: nil)
   }
+  
+  func setupNavigationController() {
+    navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarPosition: .Any, barMetrics: .Default)
+    navigationController?.navigationBar.shadowImage = UIImage()
+    navigationItem.rightBarButtonItem?.tintColor = UIColor.twitterBlueColor()
+  }
+  
+  func disableTweetButton() {
+    tweetButton.enabled = false
+    tweetButton.backgroundColor = UIColor.lightGrayColor()
+    tweetButton.layer.cornerRadius = 10
+  }
+  
+  func enableTweetButon() {
+    tweetButton.enabled = true
+    tweetButton.backgroundColor = UIColor.twitterBlueColor()
+  }
 }
 
 extension ComposeViewController: UITextViewDelegate {
   func textViewDidChange(textView: UITextView) {
     if tweetTextView.text.isEmpty {
-      tweetButton.enabled = false
-      tweetButton.backgroundColor = UIColor.lightGrayColor()
+      disableTweetButton()
       let numberOfCharactersAllowed = 140
       characterCountLabel.text = String(numberOfCharactersAllowed)
     } else {
       let characterCount = tweetTextView.text.characters.count
       characterCountLabel.text = String(Int(140 - characterCount))
-      tweetButton.enabled = true
-      tweetButton.backgroundColor = UIColor.twitterBlueColor()
+      enableTweetButon()
     }
   }
 }

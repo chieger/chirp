@@ -11,8 +11,11 @@ import BDBOAuth1Manager
 
 class LoginViewController: UIViewController {
   
+  @IBOutlet weak var loginWithTwitterButton: UIButton!
+  
   override func viewDidLoad() {
     super.viewDidLoad()
+    loginWithTwitterButton.layer.cornerRadius = 5
   }
   
   @IBAction func didPressLoginButton(sender: AnyObject) {

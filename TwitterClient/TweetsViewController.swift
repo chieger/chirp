@@ -17,6 +17,7 @@ class TweetsViewController: UIViewController {
   var refreshControl: UIRefreshControl!
   var dataLoading: Bool = false
   var url: NSURL?
+  
   var newlyCreatedTweet: Tweet? {
     didSet {
       tweets = [newlyCreatedTweet!] + tweets
@@ -127,9 +128,9 @@ extension TweetsViewController: UIScrollViewDelegate {
         TwitterClient.sharedTwitterClient().getHomeTimeline(tweets.last,
                                                             sinceTweet: nil,
                                                             success: { (tweets:[Tweet]) in
-          self.tweets += tweets
-          self.tableView.reloadData()
-          self.dataLoading = false
+                                                              self.tweets += tweets
+                                                              self.tableView.reloadData()
+                                                              self.dataLoading = false
           }, failure: { (error: NSError) in
             print(error.localizedDescription)
         })
@@ -153,5 +154,4 @@ extension TweetsViewController: DetailViewControllerDelegate {
 }
 
 extension TweetsViewController: ComposeViewControllerDelegate {
-  
 }
